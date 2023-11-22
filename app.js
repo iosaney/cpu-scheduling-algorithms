@@ -175,7 +175,7 @@ function calculateSjf() {
     let totalTurnaroundTime = 0;
 
     // Sort processes by burst time (SJF)
-    processArray.sort((a, b) => a.burstTime - b.burstTime);
+    processArray.sort((a, b) => a.arrivalTime - b.arrivalTime);
 
     let currentTime = processArray[0].arrivalTime;
 
