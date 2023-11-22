@@ -10,22 +10,21 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
-    <title>FCFS</title>
+    <title>SJF</title>
   </head>
   <body>
     <div class="container">
-      <a href="/sjf.html">calculate SJF</a>
-      <h1 class="mb-3">CPU Algorithm Schedules</h1>
+      <h1>SJF CPU Algorithm Schedule</h1>
       <div class="containBtn d-flex justify-content-center">
-      <button>Get FCFS</button>
-      <button class="buttonSjf">Get SJF</button>
+        <button class="buttonSjf my-3">SJF</button>
       </div>
-      <div class="results my-3">
+
       <h4 id="processNum"></h4>
+
       <h4 id="avgWt"></h4>
       <h4 id="avgTat"></h4>
-      </div>
-    <hr />
+
+      <hr />
 <div class="row mt-4 align-items-end">
   <div class="col-2">
     <h4>Process Name</h4>
@@ -52,8 +51,6 @@
     <p id="aatValues"></p>
   </div>
 </div>
-
-    </div>
-    <script src="app.js"></script>
+    <script src="sjfApp.js"></script>
   </body>
 </html>
