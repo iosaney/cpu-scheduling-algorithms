@@ -1,155 +1,115 @@
-let processArray = [];
+class Process {
+  constructor(pid, arrival_time, burst_time) {
+    this.pid = pid;
+    this.arrival_time = arrival_time;
+    this.burst_time = burst_time;
+    this.start_time = 0;
+    this.completion_time = 0;
+    this.turnaround_time = 0;
+    this.waiting_time = 0;
+    this.response_time = 0;
+  }
+}
 
-let btn = document.querySelector("button");
-btn.addEventListener("click", roundRobin);
+function compareArrivalTime(p1, p2) {
+  return p1.arrival_time - p2.arrival_time;
+}
+
+function comparePid(p1, p2) {
+  return p1.pid - p2.pid;
+}
 
 function roundRobin() {
-  let timeQuantum = parseInt(prompt("Enter the time quantum:"), 10);
+  const n = parseInt(prompt("Enter the number of processes:"));
+  const tq = parseInt(prompt("Enter time quantum:"));
 
-  if (isNaN(timeQuantum) || timeQuantum <= 0) {
-    alert("Please enter a valid time quantum.");
-    return;
+  const p = [];
+  const burst_remaining = new Array(n).fill(0);
+
+  let total_turnaround_time = 0;
+  let total_waiting_time = 0;
+  let total_response_time = 0;
+
+  for (let i = 0; i < n; i++) {
+    const arrival_time = parseInt(
+      prompt(`Enter arrival time of process ${i + 1}:`)
+    );
+    const burst_time = parseInt(
+      prompt(`Enter burst time of process ${i + 1}:`)
+    );
+
+    burst_remaining[i] = burst_time;
+    p.push(new Process(i + 1, arrival_time, burst_time));
   }
 
-  let completedList = [];
-  let time = 0;
-  let queue = [];
+  p.sort(compareArrivalTime);
 
-  let numberOfProcesses = parseInt(prompt("How many Processes do you have?"));
+  const q = [];
+  let current_time = 0;
 
-  if (isNaN(numberOfProcesses) || numberOfProcesses <= 0) {
-    alert("Please enter a valid number of processes greater than 0.");
-    return;
-  }
+  while (true) {
+    let done = true;
 
-  for (let i = 1; i <= numberOfProcesses; i++) {
-    let arrivalTime =
-      parseFloat(prompt(`Enter the arrivalTime for P${i}:`)) || 0;
-    let burstTime = parseFloat(prompt(`Enter the burstTime for P${i}:`)) || 0;
+    for (let i = 0; i < n; i++) {
+      if (burst_remaining[i] > 0) {
+        done = false;
 
-    let theProcess = {
-      name: `P${i}`,
-      arrivalTime: arrivalTime,
-      burstTime: burstTime,
-      completedTime: 0,
-      turnAroundTime: 0,
-      waitingTime: 0,
-    };
-    processArray.push(theProcess);
-  }
-
-  function addToQueue() {
-    for (var i = 0; i < processArray.length; i++) {
-      if (processArray[i].arrivalTime === time) {
-        var process = {
-          name: processArray[i].name,
-          arrivalTime: processArray[i].arrivalTime,
-          burstTime: processArray[i].burstTime,
-        };
-        processArray.splice(i, 1);
-        queue.push(process);
-      }
-    }
-  }
-
-  function selectProcessForRR() {
-    if (queue.length != 0) {
-      queue.sort(function (a, b) {
-        if (a.burstTime > b.burstTime) {
-          return 1;
+        if (burst_remaining[i] > tq) {
+          current_time += tq;
+          burst_remaining[i] -= tq;
         } else {
-          return -1;
+          current_time += burst_remaining[i];
+          burst_remaining[i] = 0;
+          p[i].completion_time = current_time;
         }
-      });
+      }
+    }
 
-      if (queue[0].burstTime < timeQuantum) {
-        process = queue.shift();
-        process.completedTime = time + process.burstTime;
+    if (done) break;
 
-        for (var index = 0; index < process.burstTime; index++) {
-          time++;
-          addToQueue();
+    for (let i = 0; i < n; i++) {
+      if (p[i].arrival_time <= current_time && burst_remaining[i] > 0) {
+        if (!q.includes(i)) {
+          q.push(i);
         }
-        completedList.push(process);
-      } else if (queue[0].burstTime == timeQuantum) {
-        process = queue.shift();
-        process.completedTime = time + timeQuantum;
-        completedList.push(process);
+      }
+    }
 
-        for (var index = 0; index < timeQuantum; index++) {
-          time++;
-          addToQueue();
-        }
-      } else if (queue[0].burstTime > timeQuantum) {
-        process = queue[0];
-        queue[0].burstTime = process.burstTime - timeQuantum;
-
-        for (var index = 0; index < timeQuantum; index++) {
-          time++;
-          addToQueue();
-        }
+    const idx = q.shift();
+    if (idx !== undefined) {
+      if (p[idx].start_time === 0) {
+        p[idx].start_time = current_time;
       }
     }
   }
 
-  while (processArray.length > 0 || queue.length > 0) {
-    addToQueue();
-    while (queue.length === 0) {
-      time++;
-      addToQueue();
-    }
-    selectProcessForRR();
+  for (let i = 0; i < n; i++) {
+    p[i].turnaround_time = p[i].completion_time - p[i].arrival_time;
+    p[i].waiting_time = p[i].turnaround_time - p[i].burst_time;
+    p[i].response_time = p[i].start_time - p[i].arrival_time;
+
+    total_turnaround_time += p[i].turnaround_time;
+    total_waiting_time += p[i].waiting_time;
+    total_response_time += p[i].response_time;
   }
 
-  var totalTurnaroundTime = completedList.reduce(
-    (sum, process) => sum + process.completedTime - process.arrivalTime,
-    0
-  );
-  var totalWaitingTime = completedList.reduce(
-    (sum, process) =>
-      sum + process.completedTime - process.arrivalTime - process.burstTime,
-    0
-  );
+  const avg_turnaround_time = total_turnaround_time / n;
+  const avg_waiting_time = total_waiting_time / n;
+  const avg_response_time = total_response_time / n;
 
-  var avgTurnaroundTime = totalTurnaroundTime / completedList.length;
-  var avgWaitingTime = totalWaitingTime / completedList.length;
+  p.sort(comparePid);
 
-  document.getElementById("avgTat").innerText = `AAT = ${avgTurnaroundTime}`;
-  document.getElementById("avgWt").innerText = `AWT = ${avgWaitingTime}`;
+  console.log("\n#P\tAT\tBT\tST\tCT\tTAT\tWT\tRT\t");
 
-  const processNumbers = document.getElementById("processNum");
-  processNumbers.innerHTML = `you have ${numberOfProcesses} processes`;
-  let processNamesElement = document.getElementById("processNames");
-  let arrivalTimesElement = document.getElementById("arrivalTimes");
-  let burstTimesElement = document.getElementById("burstTimes");
-  let awtValuesElement = document.getElementById("awtValues");
-  let aatValuesElement = document.getElementById("aatValues");
+  for (let i = 0; i < n; i++) {
+    console.log(
+      `${p[i].pid}\t${p[i].arrival_time}\t${p[i].burst_time}\t${p[i].start_time}\t${p[i].completion_time}\t${p[i].turnaround_time}\t${p[i].waiting_time}\t${p[i].response_time}\t`
+    );
+  }
 
-  let ctValuesElement = document.getElementById("ctValues");
-
-  processNamesElement.innerHTML = completedList
-    .map((process) => `<p>${process.name}</p>`)
-    .join("");
-  arrivalTimesElement.innerHTML = completedList
-    .map((process) => `<p>${process.arrivalTime}</p>`)
-    .join("");
-  burstTimesElement.innerHTML = completedList
-    .map((process) => `<p>${process.burstTime}</p>`)
-    .join("");
-
-  ctValuesElement.innerHTML = completedList
-    .map((process) => `<p>${process.completedTime}</p>`)
-    .join("");
-
-  awtValuesElement.innerHTML = completedList
-    .map(
-      (process) =>
-        `<p>${
-          process.completedTime - process.arrivalTime - process.burstTime
-        }</p>`
-    )
-    .join("");
-  aatValuesElement.innerHTML = completedList
-    .map((process) => `<p>${process.completedTime - process.arrivalTime}</p>`)
-    .join("");
+  console.log(`Average Turnaround Time = ${avg_turnaround_time}`);
+  console.log(`Average Waiting Time = ${avg_waiting_time}`);
+  console.log(`Average Response Time = ${avg_response_time}`);
 }
+
+roundRobin();
