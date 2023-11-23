@@ -110,6 +110,40 @@ function roundRobin() {
   console.log(`Average Turnaround Time = ${avg_turnaround_time}`);
   console.log(`Average Waiting Time = ${avg_waiting_time}`);
   console.log(`Average Response Time = ${avg_response_time}`);
+  
+  document.getElementById("avgTat").innerHTML = `AAT = ${avg_turnaround_time}`;
+  document.getElementById("avgWt").innerHTML = `AWT = ${avg_waiting_time}`;
+
+  const processNumbers = document.getElementById("processNum");
+  processNumbers.innerHTML = `You have ${n} processes`;
+
+  let processNamesElement = document.getElementById("processNames");
+  let arrivalTimesElement = document.getElementById("arrivalTimes");
+  let burstTimesElement = document.getElementById("burstTimes");
+  let awtValuesElement = document.getElementById("awtValues");
+  let aatValuesElement = document.getElementById("aatValues");
+
+  // Generating HTML content for process details
+  let processNamesHTML = "";
+  let arrivalTimesHTML = "";
+  let burstTimesHTML = "";
+  let awtValuesHTML = "";
+  let aatValuesHTML = "";
+
+  for (let i = 0; i < n; i++) {
+    processNamesHTML += `<p>${p[i].pid}</p>`;
+    arrivalTimesHTML += `<p>${p[i].arrival_time}</p>`;
+    burstTimesHTML += `<p>${p[i].burst_time}</p>`;
+    awtValuesHTML += `<p>${p[i].waiting_time}</p>`;
+    aatValuesHTML += `<p>${p[i].turnaround_time}</p>`;
+  }
+
+  processNamesElement.innerHTML = processNamesHTML;
+  arrivalTimesElement.innerHTML = arrivalTimesHTML;
+  burstTimesElement.innerHTML = burstTimesHTML;
+  awtValuesElement.innerHTML = awtValuesHTML;
+  aatValuesElement.innerHTML = aatValuesHTML;
+
 }
 
 roundRobin();
