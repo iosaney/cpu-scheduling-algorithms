@@ -12,9 +12,9 @@ function calculateSrt() {
   let totalResponseTime = 0;
   let totalIdleTime = 0;
 
-  const n = parseInt(prompt("Enter the number of processes:")) || 0;
+  const processNames = parseInt(prompt("Enter the number of processes:")) || 0;
 
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < processNames; i++) {
     p.push({
       pid: i + 1,
       arrival_time: parseInt(prompt(`Enter arrival time of process ${i + 1}:`)),
@@ -32,11 +32,11 @@ function calculateSrt() {
   let current_time = 0;
   let completed = 0;
 
-  while (completed !== n) {
+  while (completed !== processNames) {
     let idx = -1;
     let shortest = Number.MAX_SAFE_INTEGER;
 
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < processNames; i++) {
       if (p[i].arrival_time <= current_time && isCompleted[i] === 0) {
         if (burstRemaining[i] < shortest) {
           shortest = burstRemaining[i];
@@ -73,15 +73,15 @@ function calculateSrt() {
     }
   }
 
-  const avgTurnaroundTime = totalTurnaroundTime / n;
-  const avgWaitingTime = totalWaitingTime / n;
-  const avgResponseTime = totalResponseTime / n;
+  const avgTurnaroundTime = totalTurnaroundTime / processNames;
+  const avgWaitingTime = totalWaitingTime / processNames;
+  const avgResponseTime = totalResponseTime / processNames;
   const cpuUtilisation = ((current_time - totalIdleTime) / current_time) * 100;
-  const throughput = n / current_time;
+  const throughput = processNames / current_time;
 
   console.log("\n#P\tAT\tBT\tST\tCT\tTAT\tWT\tRT\n");
 
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < processNames; i++) {
     console.log(
       `${p[i].pid}\t${p[i].arrival_time}\t${p[i].burst_time}\t${p[i].start_time}\t${p[i].completion_time}\t${p[i].turnaround_time}\t${p[i].waiting_time}\t${p[i].response_time}\n`
     );
@@ -92,4 +92,43 @@ function calculateSrt() {
   console.log(`Average Response Time = ${avgResponseTime}`);
   console.log(`CPU Utilization = ${cpuUtilisation}%`);
   console.log(`Throughput = ${throughput} process/unit time`);
+
+  // inner HTML
+  
+    const avgWt = document.getElementById("avgWt");
+    avgWt.innerHTML = `Average Waiting Time = ${avgWaitingTime}`;
+    const avgTat = document.getElementById("avgTat");
+    avgTat.innerHTML = `Average Turnaround Time = ${avgTurnaroundTime}`;
+  const processNumbers = document.getElementById("processNum");
+  processNumbers.innerHTML = `you have ${processNames} processes`;
+  const processNamesElement = document.getElementById("processName");
+  const arrivalTimesElement = document.getElementById("arrivalTimes");
+  const burstTimesElement = document.getElementById("burstTimes");
+  const awtValuesElement = document.getElementById("awtValues");
+  const aatValuesElement = document.getElementById("aatValues");
+
+  // HTML content based on your processArray
+  let processNamesContent = "";
+  let arrivalTimesContent = "";
+  let burstTimesContent = "";
+  let awtValuesContent = "";
+  let aatValuesContent = "";
+
+ 
+
+  for (let i = 0; i < processNames; i++) {
+    processNamesContent += `<p>${p[i].pid}</p>`;
+    arrivalTimesContent += `<p>${p[i].arrival_time}</p>`;
+    burstTimesContent += `<p>${p[i].burst_time}</p>`;
+    awtValuesContent += `<p>${p[i].waiting_time}</p>`;
+    aatValuesContent += `<p>${p[i].turnaround_time}</p>`;
+  }
+
+  // Update the content of the DOM elements
+  processNamesElement.innerHTML = processNamesContent;
+  arrivalTimesElement.innerHTML = arrivalTimesContent;
+  burstTimesElement.innerHTML = burstTimesContent;
+  awtValuesElement.innerHTML = awtValuesContent;
+  aatValuesElement.innerHTML = aatValuesContent;
 }
+
