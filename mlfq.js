@@ -5,14 +5,14 @@ function sortByArrival(arr) {
   arr.sort((a, b) => a.AT - b.AT);
 }
 
-function sortByArrival(arr) {
-  arr.sort((a, b) => a.AT - b.AT);
-}
-
 function multiLevelFeedbackQueueScheduling() {
   const Q1 = [];
   const Q2 = [];
   const Q3 = [];
+
+  let burstTimes = ""; // For Q1
+  let burstTimes1 = ""; // For Q2
+  let burstTimes2 = ""; // For Q3
 
   let n = parseInt(prompt("Enter no of processes:")) || 0;
   let time = 0;
@@ -38,13 +38,13 @@ function multiLevelFeedbackQueueScheduling() {
   let tq1 = parseInt(prompt("Enter time quantum for queue 1:")) || 5;
   let tq2 = parseInt(prompt("Enter time quantum for queue 2:")) || 8;
 
-    let processQueueInfo = "";
-    let processName = "";
-    let arrivalTimes = "";
-    let burstTimes = "";
-    let awtValues = "";
-    let aatValues = "";
+  let processQueueInfo = "";
+  let processName = "";
+  let arrivalTimes = "";
+  let awtValues = "";
+  let aatValues = "";
 
+  // first queue
   console.log(`Process in first queue following RR with qt=${tq1}`);
   console.log("Process\tRT\tWT\tTAT");
 
@@ -59,14 +59,12 @@ function multiLevelFeedbackQueueScheduling() {
       );
 
       // inner HTML
-
       processQueueInfo = `Process in first queue following RR with qt=${tq1}`;
       processName += `<p>${Q1[i].name}</p>`;
       arrivalTimes += `<p>${Q1[i].AT}</p>`;
       burstTimes += `<p>${Q1[i].BT}</p>`;
       awtValues += `<p>${Q1[i].WT}</p>`;
       aatValues += `<p>${Q1[i].TAT}</p>`;
-
     } else {
       Q2[k] = {};
       Q2[k].WT = time;
@@ -86,13 +84,12 @@ function multiLevelFeedbackQueueScheduling() {
   document.getElementById("awtValues").innerHTML = awtValues;
   document.getElementById("aatValues").innerHTML = aatValues;
 
-      let processQueueInfo1 = "";
-      let processName1 = "";
-      
-    let arrivalTimes1 = "";
-      let burstTimes1 = "";
-      let awtValues1 = "";
-      let aatValues1 = "";
+  // 2nd queue
+  let processQueueInfo1 = "";
+  let processName1 = "";
+  let arrivalTimes1 = "";
+  let awtValues1 = "";
+  let aatValues1 = "";
   console.log(`Process in second queue following RR with qt=${tq2}`);
   console.log("Process\tRT\tWT\tTAT");
 
@@ -106,10 +103,8 @@ function multiLevelFeedbackQueueScheduling() {
         `${Q2[i].name}\t${Q2[i].BT}\t${Q2[i].WT}\t${Q2[i].TAT}\t${Q1[i].AT}`
       );
 
-
       processQueueInfo1 = `Process in first queue following RR with qt=${tq2}`;
       processName1 += `<p>${Q2[i].name}</p>`;
-      
       arrivalTimes1 += `<p>${Q1[i].AT}</p>`;
       burstTimes1 += `<p>${Q2[i].BT}</p>`;
       awtValues1 += `<p>${Q2[i].WT}</p>`;
@@ -131,7 +126,10 @@ function multiLevelFeedbackQueueScheduling() {
   document.getElementById("awtValues1").innerHTML = awtValues1;
   document.getElementById("aatValues1").innerHTML = aatValues1;
 
-
+  //3rd queue
+  let processName2 = "";
+  let awtValues2 = "";
+  let aatValues2 = "";
   console.log("Process in third queue following FCFS");
   console.log("Process\tBT\tWT\tTAT");
 
@@ -147,22 +145,14 @@ function multiLevelFeedbackQueueScheduling() {
 
     const processQueueInfo2 = document.querySelector(".processQueueInfo2");
     processQueueInfo2.innerHTML = `Process in third queue following FCFS`;
-
-    const processName2 = document.getElementById("processName2");
-    const burstTimes2 = document.getElementById("burstTimes2");
-    const awtValues2 = document.getElementById("awtValues2");
-    const aatValues2 = document.getElementById("aatValues2");
-
-    processName2.innerHTML = Q3.map((process) => `<p>${process.name}</p>`).join(
-      ""
-    );
-    
-    burstTimes2.innerHTML = Q3.map((process) => `<p>${process.BT}</p>`).join(
-      ""
-    );
-    awtValues2.innerHTML = Q3.map((process) => `<p>${process.WT}</p>`).join("");
-    aatValues2.innerHTML = Q3.map((process) => `<p>${process.TAT}</p>`).join(
-      ""
-    );
+    processName2 += `<p>${Q3[i].name}</p>`;
+    burstTimes2 += `<p>${Q3[i].BT}</p>`;
+    awtValues2 += `<p>${Q3[i].WT}</p>`;
+    aatValues2 += `<p>${Q3[i].TAT}</p>`;
   }
+
+  document.getElementById("processName2").innerHTML = processName2;
+  document.getElementById("burstTimes2").innerHTML = burstTimes2;
+  document.getElementById("awtValues2").innerHTML = awtValues2;
+  document.getElementById("aatValues2").innerHTML = aatValues2;
 }
