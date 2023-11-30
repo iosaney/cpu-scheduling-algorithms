@@ -1,3 +1,6 @@
+let btn = document.querySelector("button");
+btn.addEventListener("click", roundRobin);
+
 class Process {
   constructor(pid, arrival_time, burst_time) {
     this.pid = pid;
@@ -110,7 +113,7 @@ function roundRobin() {
   console.log(`Average Turnaround Time = ${avg_turnaround_time}`);
   console.log(`Average Waiting Time = ${avg_waiting_time}`);
   console.log(`Average Response Time = ${avg_response_time}`);
-  
+
   document.getElementById("avgTat").innerHTML = `AAT = ${avg_turnaround_time}`;
   document.getElementById("avgWt").innerHTML = `AWT = ${avg_waiting_time}`;
 
@@ -143,7 +146,5 @@ function roundRobin() {
   burstTimesElement.innerHTML = burstTimesHTML;
   awtValuesElement.innerHTML = awtValuesHTML;
   aatValuesElement.innerHTML = aatValuesHTML;
-
 }
 
-roundRobin();
