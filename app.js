@@ -70,6 +70,7 @@ function calculate() {
 
       // waitingTime property to the process object
       process.waitingTime = waitingTime;
+      process.turnaroundTime = turnaroundTime;
     }
 
     const averageWaitingTime = totalWaitingTime / processArray.length;
