@@ -2,68 +2,60 @@ let btn = document.querySelector("button");
 btn.addEventListener("click", roundRobin);
 
 class Process {
-  constructor(pid, arrival_time, burst_time) {
+  constructor(pid, arrivalTime, burstTime) {
     this.pid = pid;
-    this.arrival_time = arrival_time;
-    this.burst_time = burst_time;
-    this.start_time = 0;
-    this.completion_time = 0;
-    this.turnaround_time = 0;
-    this.waiting_time = 0;
-    this.response_time = 0;
+    this.arrivalTime = arrivalTime;
+    this.burstTime = burstTime;
+    this.startTime = 0;
+    this.completionTime = 0;
+    this.turnaroundTime = 0;
+    this.waitingTime = 0;
+    this.responseTime = 0;
   }
 }
 
 function compareArrivalTime(p1, p2) {
-  return p1.arrival_time - p2.arrival_time;
-}
-
-function comparePid(p1, p2) {
-  return p1.pid - p2.pid;
+  return p1.arrivalTime - p2.arrivalTime;
 }
 
 function roundRobin() {
   const n = parseInt(prompt("Enter the number of processes:"));
-  const tq = parseInt(prompt("Enter time quantum:"));
+  const timeQuantum = parseInt(prompt("Enter time quantum:"));
 
-  const p = [];
-  const burst_remaining = new Array(n).fill(0);
+  const processes = [];
+  const burstRemaining = new Array(n).fill(0);
 
-  let total_turnaround_time = 0;
-  let total_waiting_time = 0;
-  let total_response_time = 0;
+  let totalTurnaroundTime = 0;
+  let totalWaitingTime = 0;
+  let totalResponseTime = 0;
 
   for (let i = 0; i < n; i++) {
-    const arrival_time = parseInt(
+    const arrivalTime = parseInt(
       prompt(`Enter arrival time of process ${i + 1}:`)
     );
-    const burst_time = parseInt(
-      prompt(`Enter burst time of process ${i + 1}:`)
-    );
+    const burstTime = parseInt(prompt(`Enter burst time of process ${i + 1}:`));
 
-    burst_remaining[i] = burst_time;
-    p.push(new Process(i + 1, arrival_time, burst_time));
+    burstRemaining[i] = burstTime;
+    processes.push(new Process(i + 1, arrivalTime, burstTime));
   }
 
-  p.sort(compareArrivalTime);
+  processes.sort(compareArrivalTime);
 
-  const q = [];
-  let current_time = 0;
-
+  let currentTime = 0;
   while (true) {
     let done = true;
 
     for (let i = 0; i < n; i++) {
-      if (burst_remaining[i] > 0) {
+      if (burstRemaining[i] > 0) {
         done = false;
 
-        if (burst_remaining[i] > tq) {
-          current_time += tq;
-          burst_remaining[i] -= tq;
+        if (burstRemaining[i] > timeQuantum) {
+          currentTime += timeQuantum;
+          burstRemaining[i] -= timeQuantum;
         } else {
-          current_time += burst_remaining[i];
-          burst_remaining[i] = 0;
-          p[i].completion_time = current_time;
+          currentTime += burstRemaining[i];
+          processes[i].completionTime = currentTime;
+          burstRemaining[i] = 0;
         }
       }
     }
@@ -71,51 +63,48 @@ function roundRobin() {
     if (done) break;
 
     for (let i = 0; i < n; i++) {
-      if (p[i].arrival_time <= current_time && burst_remaining[i] > 0) {
-        if (!q.includes(i)) {
-          q.push(i);
+      if (processes[i].arrivalTime <= currentTime && burstRemaining[i] > 0) {
+        if (processes[i].startTime === 0) {
+          processes[i].startTime = currentTime;
         }
       }
     }
-
-    const idx = q.shift();
-    if (idx !== undefined) {
-      if (p[idx].start_time === 0) {
-        p[idx].start_time = current_time;
-      }
-    }
   }
 
   for (let i = 0; i < n; i++) {
-    p[i].turnaround_time = p[i].completion_time - p[i].arrival_time;
-    p[i].waiting_time = p[i].turnaround_time - p[i].burst_time;
-    p[i].response_time = p[i].start_time - p[i].arrival_time;
+    processes[i].turnaroundTime =
+      processes[i].completionTime - processes[i].arrivalTime;
+    processes[i].waitingTime =
+      processes[i].turnaroundTime - processes[i].burstTime;
+    processes[i].responseTime =
+      processes[i].startTime - processes[i].arrivalTime;
 
-    total_turnaround_time += p[i].turnaround_time;
-    total_waiting_time += p[i].waiting_time;
-    total_response_time += p[i].response_time;
+    totalTurnaroundTime += processes[i].turnaroundTime;
+    totalWaitingTime += processes[i].waitingTime;
+    totalResponseTime += processes[i].responseTime;
   }
 
-  const avg_turnaround_time = total_turnaround_time / n;
-  const avg_waiting_time = total_waiting_time / n;
-  const avg_response_time = total_response_time / n;
+  const avgTurnaroundTime = totalTurnaroundTime / n;
+  const avgWaitingTime = totalWaitingTime / n;
+  const avgResponseTime = totalResponseTime / n;
 
-  p.sort(comparePid);
+  processes.sort((a, b) => a.pid - b.pid);
 
-  console.log("\n#P\tAT\tBT\tST\tCT\tTAT\tWT\tRT\t");
+  console.log("\n#P\tAT\tBT\tST\tCT\tTAT\tWT\tRT");
 
   for (let i = 0; i < n; i++) {
+    const p = processes[i];
     console.log(
-      `${p[i].pid}\t${p[i].arrival_time}\t${p[i].burst_time}\t${p[i].start_time}\t${p[i].completion_time}\t${p[i].turnaround_time}\t${p[i].waiting_time}\t${p[i].response_time}\t`
+      `${p.pid}\t${p.arrivalTime}\t${p.burstTime}\t${p.startTime}\t${p.completionTime}\t${p.turnaroundTime}\t${p.waitingTime}\t${p.responseTime}`
     );
   }
 
-  console.log(`Average Turnaround Time = ${avg_turnaround_time}`);
-  console.log(`Average Waiting Time = ${avg_waiting_time}`);
-  console.log(`Average Response Time = ${avg_response_time}`);
+  console.log(`Average Turnaround Time = ${avgTurnaroundTime}`);
+  console.log(`Average Waiting Time = ${avgWaitingTime}`);
+  console.log(`Average Response Time = ${avgResponseTime}`);
 
-  document.getElementById("avgTat").innerHTML = `AAT = ${avg_turnaround_time}`;
-  document.getElementById("avgWt").innerHTML = `AWT = ${avg_waiting_time}`;
+  document.getElementById("avgTat").innerHTML = `AAT = ${avgTurnaroundTime}`;
+  document.getElementById("avgWt").innerHTML = `AWT = ${avgWaitingTime}`;
 
   const processNumbers = document.getElementById("processNum");
   processNumbers.innerHTML = `You have ${n} processes`;
@@ -134,11 +123,11 @@ function roundRobin() {
   let aatValuesHTML = "";
 
   for (let i = 0; i < n; i++) {
-    processNamesHTML += `<p>${p[i].pid}</p>`;
-    arrivalTimesHTML += `<p>${p[i].arrival_time}</p>`;
-    burstTimesHTML += `<p>${p[i].burst_time}</p>`;
-    awtValuesHTML += `<p>${p[i].waiting_time}</p>`;
-    aatValuesHTML += `<p>${p[i].turnaround_time}</p>`;
+    processNamesHTML += `<p>${processes[i].pid}</p>`;
+    arrivalTimesHTML += `<p>${processes[i].arrivalTime}</p>`;
+    burstTimesHTML += `<p>${processes[i].burstTime}</p>`;
+    awtValuesHTML += `<p>${processes[i].waitingTime}</p>`;
+    aatValuesHTML += `<p>${processes[i].turnaroundTime}</p>`;
   }
 
   processNamesElement.innerHTML = processNamesHTML;
@@ -147,4 +136,3 @@ function roundRobin() {
   awtValuesElement.innerHTML = awtValuesHTML;
   aatValuesElement.innerHTML = aatValuesHTML;
 }
-
